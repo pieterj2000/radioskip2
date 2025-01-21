@@ -117,6 +117,18 @@ def curradio4():
     #    artiest = t.contents[3].get_text()
     #    print(nummer, artiest)
 
+def curradio5():
+    response = requests.get("https://www.nporadio5.nl/gedraaid")
+    soep = BeautifulSoup(response.text, "html.parser")
+    t = soep.select(".sc-417f9aed-0")[0]
+    nummer = t.contents[2].get_text()
+    artiest = t.contents[3].get_text()
+    return (nummer, artiest)
+    #for t in dingen:
+    #    nummer = t.contents[2].get_text()
+    #    artiest = t.contents[3].get_text()
+    #    print(nummer, artiest)
+
 
 
 def curplaceholer():
@@ -135,7 +147,7 @@ radios = [
     { "name": "SlamFM", "getcur": curslam },
     { "name": "3FM", "getcur": cur3fm },
     { "name": "NPO klassiek", "getcur": curradio4 },
-    { "name": "Radio 5", "getcur": curplaceholer },
+    { "name": "Radio 5", "getcur": curradio5 },
     { "name": "FunX", "getcur": curplaceholer },
     { "name": "100% NL", "getcur": curplaceholer },
     { "name": "KINK", "getcur": curplaceholer },
