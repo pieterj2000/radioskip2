@@ -40,7 +40,7 @@ radiolistgroup = []
 radiolist = [ urwid.RadioButton(radiolistgroup, r["name"]) for r in radios ]
 radiolistpile = urwid.Pile(radiolist)
 
-header = urwid.AttrMap(urwid.Text("Radioskip2"), "header")
+header = urwid.AttrMap(urwid.Text("Radioskip2", align="center"), "header")
 footer = urwid.AttrMap(urwid.Text(["TODO, en quit is ", ("key", "Ctrl+Q")]), "footer")
 frame = urwid.Frame(urwid.Filler(radiolistpile,valign="top"), header=header, footer=footer)
 
