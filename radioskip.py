@@ -77,7 +77,6 @@ def curradio2():
     #    artiest = t.contents[3].get_text()
     #    print(nummer, artiest)
 
-
 def cursublime():
     response = requests.get("https://api.radioveronica.nl/api/nowplaying/playlist?stationKey=sublime&brand=sublime")
     r = json.loads(response.content)
@@ -93,6 +92,18 @@ def curslam():
     return (t["title"], t["artist"])
     #for t in dingen:
     #    print(t["title"], t["artist"])
+
+def cur3fm():
+    response = requests.get("https://www.npo3fm.nl/gedraaid")
+    soep = BeautifulSoup(response.text, "html.parser")
+    t = soep.select(".sc-8e7f384d-0")[0]
+    nummer = t.contents[2].get_text()
+    artiest = t.contents[3].get_text()
+    return (nummer, artiest)
+    #for t in dingen:
+    #    nummer = t.contents[2].get_text()
+    #    artiest = t.contents[3].get_text()
+    #    print(nummer, artiest)
 
 
 
@@ -110,7 +121,7 @@ radios = [
     { "name": "Radio 2", "getcur": curradio2 },
     { "name": "Sublime", "getcur": cursublime },
     { "name": "SlamFM", "getcur": curslam },
-    { "name": "3FM", "getcur": curplaceholer },
+    { "name": "3FM", "getcur": cur3fm },
     { "name": "Radio 4", "getcur": curplaceholer },
     { "name": "Radio 5", "getcur": curplaceholer },
     { "name": "FunX", "getcur": curplaceholer },
