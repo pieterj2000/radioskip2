@@ -37,6 +37,15 @@ def cursky():
     #    artiest = t.contents[1].get_text()
     #    print(nummer, artiest)
 
+def curveronica():
+    response = requests.get("https://api.radioveronica.nl/api/nowplaying/playlist?stationKey=veronica&brand=veronica")
+    r = json.loads(response.content)
+    t = r["tracks"][0]
+    return (t["title"], t["artist"])
+    #for t in dingen:
+    #    print(t["title"], t["artist"])
+
+
 
 
 def curplaceholer():
@@ -47,7 +56,7 @@ radios = [
     { "name": "Radio538", "getcur": cur538 },
     { "name": "SkyRadio", "getcur": cursky },
     { "name": "Radio10" , "getcur": cur10 },
-    { "name": "Veronica", "getcur": curplaceholer },
+    { "name": "Veronica", "getcur": curveronica },
     { "name": "Q-Music", "getcur": curplaceholer },
     { "name": "Radio 1", "getcur": curplaceholer },
     { "name": "Radio 2", "getcur": curplaceholer },
