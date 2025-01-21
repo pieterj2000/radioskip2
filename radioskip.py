@@ -149,6 +149,15 @@ def cur100nl():
     #for t in dingen:
     #    print(t["title"], t["artist"])
 
+def curkink():
+    response = requests.get("https://kink.nl/gedraaid/kink")
+    soep = BeautifulSoup(response.text, "html.parser")
+    t = soep.select(".flex.grow.flex-col.p-1")[0]
+    return (t.contents[0].get_text(), t.contents[1].get_text())
+    #for t in dingen:
+    #    nummer = t.contents[0].get_text()
+    #    artiest = t.contents[1].get_text()
+    #    print(nummer, artiest)
 
 
 def curplaceholer():
@@ -170,7 +179,7 @@ radios = [
     { "name": "Radio 5", "getcur": curradio5 },
     { "name": "FunX", "getcur": curfunx },
     { "name": "100% NL", "getcur": cur100nl },
-    { "name": "KINK", "getcur": curplaceholer },
+    { "name": "KINK", "getcur": curkink },
     { "name": "Soul Radio", "getcur": curplaceholer },
     { "name": "Arrow Classic Rock", "getcur": curplaceholer },
     { "name": "classicnl", "getcur": curplaceholer },

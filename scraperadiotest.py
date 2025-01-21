@@ -46,3 +46,13 @@ import json
 #     artiest = t.contents[3].get_text()
 #     print(nummer, artiest)
 
+
+#kink.nl
+# response = requests.get("https://kink.nl/gedraaid/kink")
+# soep = BeautifulSoup(response.text, "html.parser")
+# dingen = soep.select(".flex.grow.flex-col.p-1")
+# for t in dingen:
+#     nummer = t.contents[0].get_text()
+#     artiest = t.contents[1].get_text()
+#     print(nummer, artiest)
+
