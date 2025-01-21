@@ -78,6 +78,16 @@ def curradio2():
     #    print(nummer, artiest)
 
 
+def cursublime():
+    response = requests.get("https://api.radioveronica.nl/api/nowplaying/playlist?stationKey=sublime&brand=sublime")
+    r = json.loads(response.content)
+    t = r["tracks"][0]
+    return (t["title"], t["artist"])
+    #for t in dingen:
+    #    print(t["title"], t["artist"])
+
+
+
 def curplaceholer():
     return ("nummer", "artiest")
 
@@ -90,7 +100,7 @@ radios = [
     { "name": "Q-Music", "getcur": curqmusic },
     { "name": "Radio 1", "getcur": curradio1 },
     { "name": "Radio 2", "getcur": curradio2 },
-    { "name": "Sublime", "getcur": curplaceholer },
+    { "name": "Sublime", "getcur": cursublime },
     { "name": "SlamFM", "getcur": curplaceholer },
     { "name": "3FM", "getcur": curplaceholer },
     { "name": "Radio 4", "getcur": curplaceholer },

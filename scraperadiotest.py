@@ -12,8 +12,9 @@ import json
 #     print(t["track"]["title"], t["track"]["artistName"])
 
 
-#veronica
+#veronica & sublime 
 # response = requests.get("https://api.radioveronica.nl/api/nowplaying/playlist?stationKey=veronica&brand=veronica")
+# response = requests.get("https://api.radioveronica.nl/api/nowplaying/playlist?stationKey=sublime&brand=sublime")
 # r = json.loads(response.content)
 # dingen = r["tracks"]
 # for t in dingen:
