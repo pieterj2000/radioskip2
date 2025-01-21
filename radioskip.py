@@ -45,7 +45,13 @@ def curveronica():
     #for t in dingen:
     #    print(t["title"], t["artist"])
 
-
+def curqmusic():
+    response = requests.get("https://api.qmusic.nl/2.0/tracks/plays?limit=10&_station_id=qmusic_nl")
+    r = json.loads(response.content)
+    t = r["played_tracks"][0]
+    return (t["title"], t["artist"]["name"])
+    #for t in dingen:
+    #    print(t["title"], t["artist"]["name"])
 
 
 def curplaceholer():
@@ -57,7 +63,7 @@ radios = [
     { "name": "SkyRadio", "getcur": cursky },
     { "name": "Radio10" , "getcur": cur10 },
     { "name": "Veronica", "getcur": curveronica },
-    { "name": "Q-Music", "getcur": curplaceholer },
+    { "name": "Q-Music", "getcur": curqmusic },
     { "name": "Radio 1", "getcur": curplaceholer },
     { "name": "Radio 2", "getcur": curplaceholer },
     { "name": "Sublime", "getcur": curplaceholer },

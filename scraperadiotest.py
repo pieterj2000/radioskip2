@@ -18,3 +18,10 @@ import json
 # dingen = r["tracks"]
 # for t in dingen:
 #     print(t["title"], t["artist"])
+
+
+response = requests.get("https://api.qmusic.nl/2.0/tracks/plays?limit=10&_station_id=qmusic_nl")
+r = json.loads(response.content)
+dingen = r["played_tracks"]
+for t in dingen:
+    print(t["title"], t["artist"]["name"])
