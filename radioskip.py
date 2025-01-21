@@ -26,7 +26,7 @@ def cur10():
 
 def cursky():
     response = requests.get('https://www.skyradio.nl/playlist/sky-radio')
-    soep = BeautifulSoup(response.text)
+    soep = BeautifulSoup(response.text, "html.parser")
     dingen = soep.select(".mui-j7qwjs")
     t = dingen[0]
     nummer = t.contents[0].get_text()
@@ -53,6 +53,18 @@ def curqmusic():
     #for t in dingen:
     #    print(t["title"], t["artist"]["name"])
 
+def curradio1():
+    response = requests.get("https://www.nporadio1.nl/gedraaid")
+    soep = BeautifulSoup(response.text, "html.parser")
+    t = soep.select(".sc-417f9aed-0")[0]
+    nummer = t.contents[2].get_text()
+    artiest = t.contents[3].get_text()
+    return (nummer, artiest)
+    #for t in dingen:
+    #    nummer = t.contents[2].get_text()
+    #    artiest = t.contents[3].get_text()
+    #    print(nummer, artiest)
+
 
 def curplaceholer():
     return ("nummer", "artiest")
@@ -64,7 +76,7 @@ radios = [
     { "name": "Radio10" , "getcur": cur10 },
     { "name": "Veronica", "getcur": curveronica },
     { "name": "Q-Music", "getcur": curqmusic },
-    { "name": "Radio 1", "getcur": curplaceholer },
+    { "name": "Radio 1", "getcur": curradio1 },
     { "name": "Radio 2", "getcur": curplaceholer },
     { "name": "Sublime", "getcur": curplaceholer },
     { "name": "SlamFM", "getcur": curplaceholer },

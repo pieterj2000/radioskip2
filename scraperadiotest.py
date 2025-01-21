@@ -19,9 +19,20 @@ import json
 # for t in dingen:
 #     print(t["title"], t["artist"])
 
+#qmusic
+# response = requests.get("https://api.qmusic.nl/2.0/tracks/plays?limit=10&_station_id=qmusic_nl")
+# r = json.loads(response.content)
+# dingen = r["played_tracks"]
+# for t in dingen:
+#     print(t["title"], t["artist"]["name"])
 
-response = requests.get("https://api.qmusic.nl/2.0/tracks/plays?limit=10&_station_id=qmusic_nl")
-r = json.loads(response.content)
-dingen = r["played_tracks"]
-for t in dingen:
-    print(t["title"], t["artist"]["name"])
+
+#radio1
+# response = requests.get("https://www.nporadio1.nl/gedraaid")
+# soep = BeautifulSoup(response.text, "html.parser")
+# dingen = soep.select(".sc-417f9aed-0")
+# for t in dingen:
+#     nummer = t.contents[2].get_text()
+#     artiest = t.contents[3].get_text()
+#     print(nummer, artiest)
+
