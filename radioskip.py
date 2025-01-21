@@ -255,6 +255,26 @@ def checkradio(radio):
         nummer, artiest = cursong
         radio["cursongtext"].set_text(nummer + " - " + artiest)
 
+    #TODO als niet hetzelfde nummer is, stop in queue van radio
+    #     en als het de huidige radio is (global variable?) ook in
+    #     spotify queue stoppen
+
+
+#TODO random radio kiezen met hotkey r (ook toggle?)
+#TODO functionailiteit buttons en dus radio activeren
+
+#TODO bijhouden wanneer spotifyqueue op is (regelmatig checken), en dan naar volgende radiostation gaatn
+# daarvoor moeten we wss bijhouden wat de volgende nummer is vanaf begin af aan (en iedere keer als queue leeg is)
+# Let op: get users quuee is de volledige queue, niet alleen tijdelijke queue
+
+
+#TODO beter uitlijnen titels en artiesten, zowel dat die niet wrappen, als dat 
+#   titels en artiesten misschien in losse kolommen moeten dan beter uitzicht
+
+#TODO als we queues van méér dan 1 nummer gaan gebruiken, mischien daar ook een counter
+# in stoppen. TODO sowieso doen trouwens, 
+
+
 
 for radio in radios:
     radio["cursong"] = ""
