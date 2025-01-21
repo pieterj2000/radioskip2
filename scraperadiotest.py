@@ -56,3 +56,8 @@ import json
 #     artiest = t.contents[1].get_text()
 #     print(nummer, artiest)
 
+
+#soulradio
+# response = requests.get("https://soulradio.nl/nowplaying/parser.php")
+# r = json.loads(response.content)
+# print(r["titel"], r["artiest"])

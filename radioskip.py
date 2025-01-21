@@ -159,6 +159,10 @@ def curkink():
     #    artiest = t.contents[1].get_text()
     #    print(nummer, artiest)
 
+def cursoul():
+    response = requests.get("https://soulradio.nl/nowplaying/parser.php")
+    r = json.loads(response.content)
+    return (r["titel"], r["artiest"])
 
 def curplaceholer():
     return ("nummer", "artiest")
@@ -180,7 +184,7 @@ radios = [
     { "name": "FunX", "getcur": curfunx },
     { "name": "100% NL", "getcur": cur100nl },
     { "name": "KINK", "getcur": curkink },
-    { "name": "Soul Radio", "getcur": curplaceholer },
+    { "name": "Soul Radio", "getcur": cursoul },
     { "name": "Arrow Classic Rock", "getcur": curplaceholer },
     { "name": "classicnl", "getcur": curplaceholer },
     { "name": "Studio040", "getcur": curplaceholer },
