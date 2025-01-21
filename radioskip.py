@@ -4,6 +4,7 @@ import threading
 import requests
 import json
 from bs4 import BeautifulSoup
+import urllib
 
 
 def cur538():
@@ -164,6 +165,30 @@ def cursoul():
     r = json.loads(response.content)
     return (r["titel"], r["artiest"])
 
+def curarrow():
+    req = urllib.request.Request("https://www.arrow.nl")
+    req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0')
+    req.add_header('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8')
+    req.add_header('Accept-Language', 'en-US,en;q=0.5')
+    response = urllib.request.urlopen(req).read().decode('utf-8')
+    soep = BeautifulSoup(response, "html.parser")
+    lijst = []
+    t = soep.select(".playTracks > tr")[1]
+    while t.get_text().strip() != "":
+        #print()
+        #print(t)
+        #print(t.contents)
+        if len(t.contents) == 1:
+            t = t.contents[0]
+            continue
+        tup = (t.contents[1].get_text(), t.contents[2].get_text())
+        if tup[0] != "":
+            #print(tup)
+            lijst.append(tup)
+        t = t.contents[3]
+        #print(t.contents[2].get_text(), t.contents[1].get_text())
+    return lijst[0]
+
 def curplaceholer():
     return ("nummer", "artiest")
 
@@ -185,7 +210,7 @@ radios = [
     { "name": "100% NL", "getcur": cur100nl },
     { "name": "KINK", "getcur": curkink },
     { "name": "Soul Radio", "getcur": cursoul },
-    { "name": "Arrow Classic Rock", "getcur": curplaceholer },
+    { "name": "Arrow Classic Rock", "getcur": curarrow },
     { "name": "classicnl", "getcur": curplaceholer },
     { "name": "Studio040", "getcur": curplaceholer },
     { "name": "StuBru", "getcur": curplaceholer },
