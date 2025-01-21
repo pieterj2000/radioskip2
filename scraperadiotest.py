@@ -36,3 +36,12 @@ import json
 #     artiest = t.contents[3].get_text()
 #     print(nummer, artiest)
 
+#radio2
+# response = requests.get("https://www.nporadio2.nl/gedraaid")
+# soep = BeautifulSoup(response.text, "html.parser")
+# dingen = soep.select(".sc-8e7f384d-0")
+# for t in dingen:
+#     nummer = t.contents[2].get_text()
+#     artiest = t.contents[3].get_text()
+#     print(nummer, artiest)
+
