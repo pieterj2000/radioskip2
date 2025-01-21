@@ -141,6 +141,14 @@ def curfunx():
     #    artiest = t.contents[3].get_text()
     #    print(nummer, artiest)
 
+def cur100nl():
+    response = requests.get("https://api.radioveronica.nl/api/nowplaying/playlist?stationKey=100pnl&brand=100nl")
+    r = json.loads(response.content)
+    t = r["tracks"][0]
+    return (t["title"], t["artist"])
+    #for t in dingen:
+    #    print(t["title"], t["artist"])
+
 
 
 def curplaceholer():
@@ -161,7 +169,7 @@ radios = [
     { "name": "NPO klassiek", "getcur": curradio4 },
     { "name": "Radio 5", "getcur": curradio5 },
     { "name": "FunX", "getcur": curfunx },
-    { "name": "100% NL", "getcur": curplaceholer },
+    { "name": "100% NL", "getcur": cur100nl },
     { "name": "KINK", "getcur": curplaceholer },
     { "name": "Soul Radio", "getcur": curplaceholer },
     { "name": "Arrow Classic Rock", "getcur": curplaceholer },
