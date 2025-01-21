@@ -90,11 +90,8 @@ import urllib
 
 
 #classicnl
-response = requests.get("https://www.classic.nl/muziek/playlist")
-soep = BeautifulSoup(response.text, "html.parser")
-dingen = soep.select(".program_item")
-for t in dingen:
-    #nummer = t.contents[0].get_text()
-    #artiest = t.contents[1].get_text()
-    #print(nummer, artiest)
-    print(t)
+# response = requests.get("https://www.classic.nl/ajax/load.php?url=https://www.classic.nl/muziek/playlist")
+# r = json.loads(response.content)
+# dingen = r["main"]["playlist"]
+# for t in dingen:
+#     print(t["title"], t["composer"])

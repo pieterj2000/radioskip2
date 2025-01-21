@@ -189,6 +189,16 @@ def curarrow():
         #print(t.contents[2].get_text(), t.contents[1].get_text())
     return lijst[0]
 
+def curclassicnl():
+    response = requests.get("https://www.classic.nl/ajax/load.php?url=https://www.classic.nl/muziek/playlist")
+    r = json.loads(response.content)
+    t = r["main"]["playlist"][0]
+    return (t["title"], t["composer"])
+    #for t in dingen:
+    #    print(t["title"], t["composer"])
+
+
+
 def curplaceholer():
     return ("nummer", "artiest")
 
@@ -211,7 +221,7 @@ radios = [
     { "name": "KINK", "getcur": curkink },
     { "name": "Soul Radio", "getcur": cursoul },
     { "name": "Arrow Classic Rock", "getcur": curarrow },
-    { "name": "classicnl", "getcur": curplaceholer },
+    { "name": "classicnl", "getcur": curclassicnl },
     { "name": "Studio040", "getcur": curplaceholer },
     { "name": "StuBru", "getcur": curplaceholer },
 ]
