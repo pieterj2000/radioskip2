@@ -111,8 +111,8 @@ def curradio4():
     response = requests.get("https://www.npoklassiek.nl/gedraaid")
     soep = BeautifulSoup(response.text, "html.parser")
     t = soep.select(".sc-f1f85519-3")[0]
-    nummer = t.contents[0].get_text()
-    artiest = t.contents[1].get_text()
+    nummer = t.contents[1].get_text()
+    artiest = t.contents[0].get_text()
     return (nummer, artiest)
     #for t in dingen:
     #    nummer = t.contents[2].get_text()
@@ -122,7 +122,7 @@ def curradio4():
 def curradio5():
     response = requests.get("https://www.nporadio5.nl/gedraaid")
     soep = BeautifulSoup(response.text, "html.parser")
-    t = soep.select(".sc-417f9aed-0")[0]
+    t = soep.select(".sc-8e7f384d-0")[0]
     nummer = t.contents[2].get_text()
     artiest = t.contents[3].get_text()
     return (nummer, artiest)
@@ -155,7 +155,7 @@ def curkink():
     response = requests.get("https://kink.nl/gedraaid/kink")
     soep = BeautifulSoup(response.text, "html.parser")
     t = soep.select(".flex.grow.flex-col.p-1")[0]
-    return (t.contents[0].get_text(), t.contents[1].get_text())
+    return (t.contents[1].get_text(), t.contents[0].get_text())
     #for t in dingen:
     #    nummer = t.contents[0].get_text()
     #    artiest = t.contents[1].get_text()
@@ -182,7 +182,7 @@ def curarrow():
         if len(t.contents) == 1:
             t = t.contents[0]
             continue
-        tup = (t.contents[1].get_text(), t.contents[2].get_text())
+        tup = (t.contents[2].get_text(), t.contents[1].get_text())
         if tup[0] != "":
             #print(tup)
             lijst.append(tup)
@@ -274,6 +274,14 @@ def checkradio(radio):
 #TODO als we queues van méér dan 1 nummer gaan gebruiken, mischien daar ook een counter
 # in stoppen. TODO sowieso doen trouwens, 
 
+#TODO fetchen in andere thread (die queue is thread safe toch?)
+# (en is die set_text thread safe?)
+# want hij is niet responsive terwijl hij bezig is
+# dan moet hij alleen in set_alarm_in
+# threads starten voor checken, het spotify gebeuren doen, en
+# even refreshsen (of doet hij dat automatisch?) 
+
+
 
 
 for radio in radios:
@@ -283,8 +291,10 @@ for radio in radios:
     radio["queue"] = queue.Queue(maxsize=1)
 
 
-def doe(loop, spul):
+def doe(loop, doeprint):
     for radio in radios:
+        if doeprint:
+            print("checking:", radio["name"])
         checkradio(radio)
     loop.set_alarm_in(15, doe)
 
@@ -316,5 +326,5 @@ frame = urwid.Frame(urwid.Filler(radiolistpile,valign="top"), header=header, foo
 loop = urwid.MainLoop(frame, palette, unhandled_input=quit_on_ctrl_q)
 
 
-loop.set_alarm_in(0, doe)
+loop.set_alarm_in(0, doe, True)
 loop.run()
