@@ -116,6 +116,6 @@ import urllib
 # lijst = []
 # for t in r:
 #     q = (t["node"]["title"], t["node"]["description"])
-#     if q[1] != "":
+#     if q[1] != "" and q[1] != None:
 #         lijst.append(q)
 # print(lijst)

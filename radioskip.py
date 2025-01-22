@@ -183,7 +183,7 @@ def curarrow():
             t = t.contents[0]
             continue
         tup = (t.contents[2].get_text(), t.contents[1].get_text())
-        if tup[0] != "":
+        if tup[1] != "":
             #print(tup)
             lijst.append(tup)
         t = t.contents[3]
@@ -214,7 +214,7 @@ def curstubru():
     #lijst = []
     for t in r:
         q = (t["node"]["title"], t["node"]["description"])
-        if q[1] != "":
+        if q[1] != "" and q[1] != None:
             return q
     #        lijst.append(q)
     #print(lijst)
@@ -281,13 +281,21 @@ def checkradio(radio):
 # threads starten voor checken, het spotify gebeuren doen, en
 # even refreshsen (of doet hij dat automatisch?) 
 
+#TODO laadicoontje per radio of hij aan het fetchen is?
+
+
+#TODO selected radio de hele rij kleur geven/markeren
+#TODO hotkeys in kolommen stoppen en spreiden (is dit goed?)
+
+#TODO stations toggelen om ze tijdelijk uit te zetten (zodat bijv klassiek en funx niet komen)
+# en dan grijs maken en  niet meer true te maken (zeg maar disabled of zo)
+# en disabled stations hoeven niet gefetcht te worden!
 
 
 
 for radio in radios:
-    radio["cursong"] = ""
-    radio["cursongtext"] = urwid.Text("test", align="right")
-    radio["testi"] = 0
+    radio["cursong"] = ("nummer", "artiest")
+    radio["cursongtext"] = urwid.Text("", align="right")
     radio["queue"] = queue.Queue(maxsize=1)
 
 
