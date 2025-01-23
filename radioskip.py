@@ -94,7 +94,10 @@ def curradio2():
 def cursublime():
     response = requests.get("https://api.radioveronica.nl/api/nowplaying/playlist?stationKey=sublime&brand=sublime")
     r = json.loads(response.content)
-    t = r["tracks"][0]
+    t = r["tracks"]
+    if len(t) == 0:
+        return curplaceholer()
+    t = t[0]
     return (t["title"], t["artist"])
     #for t in dingen:
     #    print(t["title"], t["artist"])
@@ -288,7 +291,7 @@ shuffleradios = False
 def checkspotify():
     cur = getcurrentspotify()
     global nextsongafterqueue
-    if cur == nextsongafterqueue:
+    if nextsongafterqueue != None and cur["id"] == nextsongafterqueue["id"]:
         nextsongafterqueue = getnextsongspotify()
         volgenderadio()
     else:
@@ -298,7 +301,10 @@ def checkspotify():
         while not q.empty():
             s = q.get()
             spotifyaddqueue(s)
-        currentradio["queuetext"].set_text(str(q.qsize()))
+        currentradio["queuetext"].set_text(str(q.qsize()))  
+    
+    huidignummertext.set_text([("footer", "huidig nummer: "), cur["name"]])
+    nextnummertext.set_text([("footer", "nummer na queue: "), nextsongafterqueue["name"]])
 
 def volgenderadio():
     global currentradio
@@ -317,6 +323,11 @@ def volgenderadio():
         currentradio["radiobutton"].set_state(True)
         checkspotify() # om de radioqueue in de spotify queue te stoppen
 
+def setradiobybutton(radio_button, new_state, radio):
+    if new_state:
+        global currentradio
+        currentradio = radio
+        checkspotify()
 
 
     
@@ -335,10 +346,10 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
         scope=scopes))
 
 def getcurrentspotify():
-    return sp.current_user_playing_track()["item"]["id"]
+    return sp.current_user_playing_track()["item"]
 
 def getnextsongspotify():
-    return sp.queue()["queue"][0]["id"]
+    return sp.queue()["queue"][0]
 
 def spotifyaddqueue(s):
     #result = sp.search("track:" + s[0] + " artist:" + s[1]) # deze zoekt te specifiek, geeft niet altijd resultaat
@@ -354,20 +365,14 @@ def spotifyaddqueue(s):
 
 
 #TODO random radio kiezen met hotkey r (ook toggle?)
-#TODO functionailiteit buttons en dus radio activeren
-
-#TODO bijhouden wanneer spotifyqueue op is (regelmatig checken), en dan naar volgende radiostation gaatn
-# daarvoor moeten we wss bijhouden wat de volgende nummer is vanaf begin af aan (en iedere keer als queue leeg is)
-# Let op: get users quuee is de volledige queue, niet alleen tijdelijke queue
-
 
 #TODO beter uitlijnen titels en artiesten, zowel dat die niet wrappen, als dat 
 #   titels en artiesten misschien in losse kolommen moeten dan beter uitzicht
 # of met kleurtjes onderschijden
 #TODO kolommen weighten
 
-#TODO als we queues van méér dan 1 nummer gaan gebruiken, mischien daar ook een counter
-# in stoppen. TODO sowieso doen trouwens, 
+
+#TODO spotify fetchen in een thread?
 
 #TODO fetchen in andere thread (die queue is thread safe toch?)
 # (en is die set_text thread safe?)
@@ -390,6 +395,9 @@ def spotifyaddqueue(s):
 #TODO stopknop (zet de huidige active radio radiobutton op false, en zet currentratio = None)
 
 
+
+#TODO huidige (geselecteerde) rij herkenbaarder maken met styling
+
 radiolistgroup = []
 for radio in radios:
     radio["cursong"] = ("nummer", "artiest")
@@ -398,6 +406,7 @@ for radio in radios:
     radio["queuetext"] = urwid.Text("", align="right")
     radio["active"] = True
     radio["radiobutton"] = urwid.RadioButton(radiolistgroup, radio["name"])
+    urwid.connect_signal(radio["radiobutton"], "change", setradiobybutton, radio)
 
 
 def doe(loop, doeprint):
@@ -438,9 +447,12 @@ radiolist = [
     for r in radios ]
 radiolistpile = urwid.Pile(radiolist)
 
+huidignummertext = urwid.Text("")
+nextnummertext = urwid.Text("")
 header = urwid.AttrMap(urwid.Text("Radioskip2", align="center"), "header")
 footer = urwid.AttrMap(urwid.Text(["quit: ", ("key", "Ctrl+Q")]), "footer")
-frame = urwid.Frame(urwid.Filler(radiolistpile,valign="top"), header=header, footer=footer)
+curnumrow = urwid.Columns([huidignummertext, nextnummertext])
+frame = urwid.Frame(urwid.Filler(radiolistpile,valign="top"), header=header, footer=urwid.Pile([curnumrow,footer]))
 
 loop = urwid.MainLoop(frame, palette, unhandled_input=quit_on_ctrl_q)
 
