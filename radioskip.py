@@ -6,6 +6,11 @@ import json
 from bs4 import BeautifulSoup
 import urllib
 import queue
+import random
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+from dotenv import dotenv_values
+from datetime import datetime
 
 
 def cur538():
@@ -58,7 +63,11 @@ def curqmusic():
 def curradio1():
     response = requests.get("https://www.nporadio1.nl/gedraaid")
     soep = BeautifulSoup(response.text, "html.parser")
-    t = soep.select(".sc-417f9aed-0")[0]
+    t = soep.select(".sc-417f9aed-0")
+    if len(t) == 0:
+        return curplaceholer()
+    else:
+        t = t[0]
     nummer = t.contents[2].get_text()
     artiest = t.contents[3].get_text()
     return (nummer, artiest)
@@ -70,7 +79,10 @@ def curradio1():
 def curradio2():
     response = requests.get("https://www.nporadio2.nl/gedraaid")
     soep = BeautifulSoup(response.text, "html.parser")
-    t = soep.select(".sc-8e7f384d-0")[0]
+    #t = soep.select(".sc-8e7f384d-0")[0]
+    t = soep.select("article")[0].contents[1]
+    t = t.contents[0].contents[0].contents[1] # div die alle losse liedjes heeft
+    t = t.contents[0]
     nummer = t.contents[2].get_text()
     artiest = t.contents[3].get_text()
     return (nummer, artiest)
@@ -98,7 +110,7 @@ def curslam():
 def cur3fm():
     response = requests.get("https://www.npo3fm.nl/gedraaid")
     soep = BeautifulSoup(response.text, "html.parser")
-    t = soep.select(".sc-8e7f384d-0")[0]
+    t = soep.select(".sc-417f9aed-0")[0]
     nummer = t.contents[2].get_text()
     artiest = t.contents[3].get_text()
     return (nummer, artiest)
@@ -152,14 +164,14 @@ def cur100nl():
     #    print(t["title"], t["artist"])
 
 def curkink():
-    response = requests.get("https://kink.nl/gedraaid/kink")
-    soep = BeautifulSoup(response.text, "html.parser")
-    t = soep.select(".flex.grow.flex-col.p-1")[0]
-    return (t.contents[1].get_text(), t.contents[0].get_text())
-    #for t in dingen:
-    #    nummer = t.contents[0].get_text()
-    #    artiest = t.contents[1].get_text()
-    #    print(nummer, artiest)
+    dag = datetime.today().strftime("%Y-%m-%d")
+    response = requests.get("https://api.kink.nl/v2/played-tracks?stream=1&date=" + dag + "&limit=10&dir=desc")
+    r = json.loads(response.content)["data"]
+    t = r[0]["track"]["data"]
+    return (t["title"], t["artist"])
+    # for tt in r:
+    #     t = tt["track"]["data"]
+    #     print(t["title"], t["artist"])
 
 def cursoul():
     response = requests.get("https://soulradio.nl/nowplaying/parser.php")
@@ -188,7 +200,10 @@ def curarrow():
             lijst.append(tup)
         t = t.contents[3]
         #print(t.contents[2].get_text(), t.contents[1].get_text())
-    return lijst[0]
+    if len(lijst) == 0:
+        return curplaceholer()
+    else:
+        return lijst[0]
 
 def curclassicnl():
     response = requests.get("https://www.classic.nl/ajax/load.php?url=https://www.classic.nl/muziek/playlist")
@@ -247,17 +262,95 @@ radios = [
     { "name": "StuBru", "getcur": curstubru },
 ]
 
-
-
 def checkradio(radio):
     cursong = radio["getcur"]()
+    q = radio["queue"]
     if cursong != radio["cursong"]:
+        radio["cursong"] = cursong
         nummer, artiest = cursong
         radio["cursongtext"].set_text(nummer + " - " + artiest)
+        if q.full():
+            try:
+                q.get()
+            except queue.Empty:
+                pass
+        q.put(cursong)
+    radio["queuetext"].set_text(str(q.qsize()))
 
-    #TODO als niet hetzelfde nummer is, stop in queue van radio
-    #     en als het de huidige radio is (global variable?) ook in
-    #     spotify queue stoppen
+
+currentradio = radios[0]
+nextsongafterqueue = None
+shuffleradios = False
+# TODO deze ook allemaal zichtbaar maken!
+
+#TODO aan het begin op stop/inactief zetten
+
+def checkspotify():
+    cur = getcurrentspotify()
+    global nextsongafterqueue
+    if cur == nextsongafterqueue:
+        nextsongafterqueue = getnextsongspotify()
+        volgenderadio()
+    else:
+        if nextsongafterqueue == None:
+            nextsongafterqueue = getnextsongspotify()
+        q = currentradio["queue"]
+        while not q.empty():
+            s = q.get()
+            spotifyaddqueue(s)
+        currentradio["queuetext"].set_text(str(q.qsize()))
+
+def volgenderadio():
+    global currentradio
+    currentradio["radiobutton"].set_state(False)
+    activeradios = [ r for r in radios if r["active"] != False ]
+    if shuffleradios:
+        next = random.choice(activeradios)
+        currentradio = next
+    else:
+        i = activeradios.index(currentradio)
+        i = (i + 1) % len(activeradios)
+        currentradio = activeradios[i]
+    if currentradio["queue"].empty():
+        volgenderadio()
+    else:
+        currentradio["radiobutton"].set_state(True)
+        checkspotify() # om de radioqueue in de spotify queue te stoppen
+
+
+
+    
+secrets = dotenv_values("secrets.env")
+scopes = [
+    "user-read-currently-playing",
+    "user-modify-playback-state",
+    "user-read-playback-state"
+    ]
+
+
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
+        client_id=secrets["SPOTIFY_CLIENT_ID"],
+        client_secret=secrets["SPOTIFY_CLIENT_SECRET"],
+        redirect_uri=secrets["SPOTIFY_REDIRECT_URI"],
+        scope=scopes))
+
+def getcurrentspotify():
+    return sp.current_user_playing_track()["item"]["id"]
+
+def getnextsongspotify():
+    return sp.queue()["queue"][0]["id"]
+
+def spotifyaddqueue(s):
+    #result = sp.search("track:" + s[0] + " artist:" + s[1]) # deze zoekt te specifiek, geeft niet altijd resultaat
+    result = sp.search(s[0] + " " + s[1])
+    #with open('out.txt', 'w') as f:
+    #    print(result, file=f)  # Python 3.x
+    result = result["tracks"]["items"]
+    sp.add_to_queue(result[0]["id"])
+    #for r in result:
+    #    print(r["name"])
+    #while True:
+    #    pass
 
 
 #TODO random radio kiezen met hotkey r (ook toggle?)
@@ -270,6 +363,8 @@ def checkradio(radio):
 
 #TODO beter uitlijnen titels en artiesten, zowel dat die niet wrappen, als dat 
 #   titels en artiesten misschien in losse kolommen moeten dan beter uitzicht
+# of met kleurtjes onderschijden
+#TODO kolommen weighten
 
 #TODO als we queues van méér dan 1 nummer gaan gebruiken, mischien daar ook een counter
 # in stoppen. TODO sowieso doen trouwens, 
@@ -292,18 +387,31 @@ def checkradio(radio):
 # en disabled stations hoeven niet gefetcht te worden!
 
 
+#TODO stopknop (zet de huidige active radio radiobutton op false, en zet currentratio = None)
 
+
+radiolistgroup = []
 for radio in radios:
     radio["cursong"] = ("nummer", "artiest")
     radio["cursongtext"] = urwid.Text("", align="right")
-    radio["queue"] = queue.Queue(maxsize=1)
+    radio["queue"] = queue.Queue(maxsize=3)
+    radio["queuetext"] = urwid.Text("", align="right")
+    radio["active"] = True
+    radio["radiobutton"] = urwid.RadioButton(radiolistgroup, radio["name"])
 
 
 def doe(loop, doeprint):
-    for radio in radios:
-        if doeprint:
-            print("checking:", radio["name"])
-        checkradio(radio)
+    if currentradio == None: #TODO misschien hier een global 'active' van maken
+        # aangezien er eigenlijk altijd een radio is geselecteerd
+        # op het moment niets bezig, hele functie niet nodig
+        return
+    else:
+        for radio in radios:
+            if doeprint:
+                print("checking:", radio["name"])
+            checkradio(radio)
+        checkspotify()
+
     loop.set_alarm_in(15, doe)
 
 
@@ -321,14 +429,17 @@ palette = [
     ("header", "default,bold", "dark blue")
 ]
 
-radiolistgroup = []
 radiolist = [ 
-    urwid.Columns([urwid.RadioButton(radiolistgroup, r["name"]), r["cursongtext"]])
+    urwid.Columns([
+        r["radiobutton"],
+        r["cursongtext"], 
+        r["queuetext"]
+    ])
     for r in radios ]
 radiolistpile = urwid.Pile(radiolist)
 
 header = urwid.AttrMap(urwid.Text("Radioskip2", align="center"), "header")
-footer = urwid.AttrMap(urwid.Text(["TODO, en quit is ", ("key", "Ctrl+Q")]), "footer")
+footer = urwid.AttrMap(urwid.Text(["quit: ", ("key", "Ctrl+Q")]), "footer")
 frame = urwid.Frame(urwid.Filler(radiolistpile,valign="top"), header=header, footer=footer)
 
 loop = urwid.MainLoop(frame, palette, unhandled_input=quit_on_ctrl_q)
