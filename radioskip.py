@@ -323,7 +323,7 @@ def volgenderadio():
         currentradio["radiobutton"].set_state(True)
         checkspotify() # om de radioqueue in de spotify queue te stoppen
 
-def setradiobybutton(radio_button, new_state, radio):
+def setradiobybutton(radio, radio_button, new_state):
     if new_state:
         global currentradio
         currentradio = radio
@@ -402,11 +402,11 @@ radiolistgroup = []
 for radio in radios:
     radio["cursong"] = ("nummer", "artiest")
     radio["cursongtext"] = urwid.Text("", align="right")
-    radio["queue"] = queue.Queue(maxsize=3)
+    radio["queue"] = queue.Queue(maxsize=2)
     radio["queuetext"] = urwid.Text("", align="right")
     radio["active"] = True
     radio["radiobutton"] = urwid.RadioButton(radiolistgroup, radio["name"])
-    urwid.connect_signal(radio["radiobutton"], "change", setradiobybutton, radio)
+    urwid.connect_signal(radio["radiobutton"], "change", setradiobybutton, user_args=[radio])
 
 
 def doe(loop, doeprint):
