@@ -137,7 +137,10 @@ def curradio4():
 def curradio5():
     response = requests.get("https://www.nporadio5.nl/gedraaid")
     soep = BeautifulSoup(response.text, "html.parser")
-    t = soep.select(".sc-8e7f384d-0")[0]
+    #t = soep.select(".sc-8e7f384d-0")[0]
+    t = soep.select("article")[0].contents[1]
+    t = t.contents[1].contents[1] # div die alle losse liedjes heeft
+    t = t.contents[0]
     nummer = t.contents[2].get_text()
     artiest = t.contents[3].get_text()
     return (nummer, artiest)
