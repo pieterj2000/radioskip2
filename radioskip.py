@@ -286,8 +286,7 @@ def checkradio(radio):
 
 currentradio = radios[0]
 nextsongafterqueue = None
-shuffleradios = False
-# TODO deze ook allemaal zichtbaar maken!
+shuffleradios = False   # TODO deze ook zichtbaar maken!
 
 #TODO aan het begin op stop/inactief zetten
 
@@ -397,6 +396,9 @@ def spotifyaddqueue(s):
 
 #TODO stopknop (zet de huidige active radio radiobutton op false, en zet currentratio = None)
 
+#TODO grootte van de queue aanpasbaar maken? +/- toetsen? denk niet heel makkelijk
+
+#TODO alternating-modus maken, dus één nummer lijst, dan één nummer radio. Hoe?
 
 
 #TODO huidige (geselecteerde) rij herkenbaarder maken met styling
