@@ -1,0 +1,1 @@
+start powershell -noexit -command "conda activate radioskip2; python ./radioskip.py"
