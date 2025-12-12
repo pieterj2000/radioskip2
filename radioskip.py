@@ -34,10 +34,10 @@ def cur10():
 def cursky():
     response = requests.get('https://www.skyradio.nl/playlist/sky-radio')
     soep = BeautifulSoup(response.text, "html.parser")
-    dingen = soep.select(".enmxfwf9")
+    dingen = soep.select(".elwiv4f2 .text-ellipsis")
     t = dingen[0]
-    nummer = t.contents[0].get_text()
-    artiest = t.contents[1].get_text()
+    nummer = dingen[0].get_text()
+    artiest = dingen[1].get_text()
     return (nummer, artiest)
     #for t in dingen:
     #    nummer = t.contents[0].get_text()
