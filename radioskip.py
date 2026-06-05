@@ -68,7 +68,7 @@ def curradio1():
     #     return curplaceholer()
     # else:
     #     t = t[0]
-    t = soep.select(".bywiqQ > *")[0]
+    t = soep.select(".kbNGRd > *")[0]
     nummer = t.contents[2].get_text()
     artiest = t.contents[3].get_text()
     nummer = t.contents[2].get_text()
@@ -87,7 +87,7 @@ def curradio2():
     # #t = t.contents[0].contents[0].contents[1] # div die alle losse liedjes heeft
     # t = t.contents[0].contents[1] # div die alle losse liedjes heeft
     # t = t.contents[0]
-    t = soep.select(".bywiqQ > *")[0]
+    t = soep.select(".kbNGRd > *")[0]
     nummer = t.contents[2].get_text()
     artiest = t.contents[3].get_text()
     return (nummer, artiest)
@@ -118,7 +118,7 @@ def curslam():
 def cur3fm():
     response = requests.get("https://www.npo3fm.nl/gedraaid")
     soep = BeautifulSoup(response.text, "html.parser")
-    t = soep.select(".bywiqQ > *")[0]
+    t = soep.select(".kbNGRd > *")[0]
     nummer = t.contents[2].get_text()
     artiest = t.contents[3].get_text()
     return (nummer, artiest)
@@ -190,31 +190,10 @@ def cursoul():
     return (r["titel"], r["artiest"])
 
 def curarrow():
-    req = urllib.request.Request("https://www.arrow.nl")
-    req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0')
-    req.add_header('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8')
-    req.add_header('Accept-Language', 'en-US,en;q=0.5')
-    response = urllib.request.urlopen(req).read().decode('utf-8')
-    soep = BeautifulSoup(response, "html.parser")
-    lijst = []
-    t = soep.select(".playTracks > tr")[1]
-    while t.get_text().strip() != "":
-        #print()
-        #print(t)
-        #print(t.contents)
-        if len(t.contents) == 1:
-            t = t.contents[0]
-            continue
-        tup = (t.contents[2].get_text(), t.contents[1].get_text())
-        if tup[1] != "":
-            #print(tup)
-            lijst.append(tup)
-        t = t.contents[3]
-        #print(t.contents[2].get_text(), t.contents[1].get_text())
-    if len(lijst) == 0:
-        return curplaceholer()
-    else:
-        return lijst[0]
+    response = requests.get("https://www.arrow.nl/api/nowplaying")
+    r = json.loads(response.content)
+    r = r["recentTracks"][0]
+    return (r["title"], r["artist"])
 
 def curclassicnl():
     response = requests.get("https://www.classic.nl/ajax/load.php?url=https://www.classic.nl/muziek/playlist")
