@@ -343,7 +343,8 @@ def spotifyaddqueue(s):
     #with open('out.txt', 'w') as f:
     #    print(result, file=f)  # Python 3.x
     result = result["tracks"]["items"]
-    sp.add_to_queue(result[0]["id"])
+    if len(result) > 1:
+        sp.add_to_queue(result[0]["id"])
     #for r in result:
     #    print(r["name"])
     #while True:
